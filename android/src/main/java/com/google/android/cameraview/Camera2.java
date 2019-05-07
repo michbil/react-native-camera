@@ -1054,13 +1054,16 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
             @Override
             public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                 super.onCaptureCompleted(session, request, result);
-
-                if (request.getTag() == "FOCUS_TAG") {
-                    mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, null);
-                    try {
-                        mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, null);
-                    } catch (CameraAccessException e) {
-                        Log.e(TAG, "Failed to manual focus.", e);
+                Object tag = request.getTag();
+                if (tag != null) {
+                    String tagS = (String)tag;
+                    if (tagS.equals("FOCUS_TAG")) {
+                        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, null);
+                        try {
+                            mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), mCaptureCallback, null);
+                        } catch (CameraAccessException e) {
+                            Log.e(TAG, "Failed to manual focus.", e);
+                        }
                     }
                 }
             }
